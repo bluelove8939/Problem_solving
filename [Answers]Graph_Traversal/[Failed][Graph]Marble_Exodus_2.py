@@ -3,124 +3,141 @@
 # Url: https://www.acmicpc.net/problem/13460
 # 
 # 
-# 알고리즘 분류: 그리디 알고리즘
+# 알고리즘 분류: 그래프 탐색
 
 
-MIN_MOVE = 10
-N, M = 0, 0
-visited = list()
+N, M = None, None
+hole = []
+plate = []
+
+MAX_DEPTH = 10
 
 
-def move_upward(ry, rx, by, bx):
-    wallflag, holeflag = False, False
-    ret_ry, ret_by = 0, 0
-    idx = 0
-    
-    for x in {rx, bx}:
-        for y in range(len(table)):
-            if table[y][x] == '#':
-                wallflag = True
-                idx = y
-
-            if table[y][x] == 'O':
-                holeflag = True
-                idx = y
-
-            if ry == y and rx == x:
-                if wallflag:
-                    ret_ry = idx+1
-                    idx += 1
-                if holeflag:
-                    ret_ry = -1
-
-            if by == y and bx == x:
-                if wallflag:
-                    ret_by = idx+1
-                    idx += 1
-                if holeflag:
-                    ret_by = -1
-
-    return ret_ry, rx, ret_by, bx
-
-
-def find_min_move(table, ry, rx, by, bx, depth):
-    if depth == 10:
+def dfs(red, blue, axis, direction, depth = 0):
+    if depth >= MAX_DEPTH:
         return -1
 
-    ret = 11
-    visited[10*ry+rx][10*by+bx] = True
+    # if axis == 0 and direction == 0: move toward positive row direction
+    # if axis == 0 and direction == 1: move toward negative row direction
+    # if axis == 1 and direction == 0: move toward positive column direction
+    # if axis == 1 and direction == 1: move toward negative column direction
 
-    # 위로 이동
-    nry, nrx, nby, nbx = move_upward(ry, rx, by, bx)
-
-    if nry == -1:
-        return depth + 1
-    elif nby == -1:
-        return -1
+    if red[axis] == blue[axis] and direction == 0:
+        pre = "red" if red[abs(axis-1)] < blue[abs(axis-1)] else "blue"
+        pos = "red" if red[abs(axis-1)] > blue[abs(axis-1)] else "blue"
+    elif red[axis] == blue[axis] and direction == 1:
+        pre = "red" if red[abs(axis-1)] > blue[abs(axis-1)] else "blue"
+        pos = "red" if red[abs(axis-1)] < blue[abs(axis-1)] else "blue"
     else:
-        if not visited[10*nry+nrx][10*nby+nbx]:
-            ret = min(ret if ret != -1 else 11, find_min_move(table, nry, nrx, nby, nbx, depth+1))
+        pre, pos = "red", "blue"
 
-    # 아래로 이동
-    table = list(reversed(table))
-    nry, nrx, nby, nbx = move_upward(ry, rx, by, bx)
-    table = list(reversed(table))
 
-    if nry == -1:
-        return depth + 1
-    elif nby == -1:
-        return -1
+    # 'pre' is precedent to 'pos' according to the given direction
+    # so the position of 'pos' needs to be decided first
+    # pre          pos         wall    =>                    pre pos wall
+    # ---------------------------->         ---------------------------->
+
+    pre_marvel = red if pre == "red" else blue
+    pos_marvel = red if pos == "red" else blue
+
+
+    # 1. find out the next positoin of 'pos'
+    nxt_idx = pos_marvel[abs(axis-1)]
+
+    while nxt_idx != hole[abs(axis-1)] and \
+            (plate[nxt_idx][pos_marvel[1]] if axis == 0 else plate[pos_marvel[0]][nxt_idx]) != 1:
+        if direction == 0:
+            nxt_idx += 1
+        else:
+            nxt_idx -= 1
+
+    if nxt_idx == hole[abs(axis-1)]:
+        if pos == "blue":
+            return -1
+        else:
+            return depth + 1
     else:
-        if not visited[10*(N-nry)+nrx][10*(N-nby)+nbx]:
-            ret = min(ret if ret != -1 else 11, find_min_move(table, N-1-nry, nrx, N-1-nby, nbx, depth+1))
-    
-    # 오른쪽 이동
-    table = list(reversed(table))
-    table = [[table[y][x] for y in range(N)] for x in range(M)]
-    nry, nrx, nby, nbx = move_upward(ry, rx, by, bx)
-    table = [[table[y][x] for y in range(M)] for x in range(N)]
-    table = list(reversed(table))
+        pos_marvel[abs(axis-1)] = nxt_idx
 
-    if nry == -1:
-        return depth + 1
-    elif nby == -1:
-        return -1
+
+    # 2. find out the next positoin of 'pos'
+    nxt_idx = pre_marvel[abs(axis-1)]
+
+    while nxt_idx != hole[abs(axis-1)] and \
+            (plate[nxt_idx][pre_marvel[1]] if axis == 0 else plate[pre_marvel[0]][nxt_idx]) != 1 and \
+            (nxt_idx != pos_marvel[abs(axis-1)] if red[axis] == blue[axis] else True):
+        if direction == 0:
+            nxt_idx += 1
+        else:
+            nxt_idx -= 1
+
+    if nxt_idx == hole[abs(axis-1)]:
+        if pre == "blue":
+            return -1
+        else:
+            return depth + 1
     else:
-        if not visited[10*nrx+N-nry][10*nbx+N-nby]:
-            ret = min(ret if ret != -1 else 11, find_min_move(table, nrx, N-1-nry, nbx, N-1-nby, depth+1))
+        pre_marvel[abs(axis-1)] = nxt_idx
 
-    # 왼쪽 이동
-    table = [[table[y][x] for y in range(N)] for x in range(M)]
-    nry, nrx, nby, nbx = move_upward(ry, rx, by, bx)
-    table = [[table[y][x] for y in range(M)] for x in range(N)]
+    print(f"ax {axis}  di {direction}  red {red}  blue {blue}")
 
-    if nry == -1:
-        return depth + 1
-    elif nby == -1:
-        return -1
-    else:
-        if not visited[10*nrx+nry][10*nbx+nby]:
-            ret = min(ret if ret != -1 else 11, find_min_move(table, nrx, nry, nbx, nby, depth+1))
-    
+
+    # Graph traversal
+    red = pre_marvel if pre == "red" else pos_marvel
+    blue = pre_marvel if pre == "blue" else pos_marvel
+
+    ret = MAX_DEPTH
+
+    for ax in range(2):       # axis can be 0 or 1
+        for di in range(2):   # direction can be 0 or 1
+            val = dfs(red, blue, axis=ax, direction=di, depth=depth+1)
+            if val != -1:
+                ret = min(ret, val)
+
     return ret
 
 
-if __name__ == "__main__":
+def solve(red, blue):
+    ret = MAX_DEPTH
+
+    for ax in range(2):      # axis can be 0 or 1
+        for di in range(2):  # direction can be 0 or 1
+            val = dfs(red, blue, axis=ax, direction=di, depth=0)
+            if val != -1:
+                ret = min(ret, val)
+
+    return ret
+
+
+if __name__ == '__main__':
     N, M = map(int, input().split())
-    table = [[letter for letter in input()] for _ in range(N)]
-    visited = [[False for _ in range(100)] for _ in range(100)]
-    ry, rx, by, bx = 0, 0, 0, 0
+    red  = [None, None]
+    blue = [None, None]
+    hole = [None, None]
+    plate = []
 
-    for y in range(N):
-        for x in range(M):
-            if table[y][x] == 'R':
-                ry, rx = y, x
-            if table[y][x] == 'B':
-                by, bx = y, x
-    
-    # print(find_min_move(table, ry, rx, by, bx, 0))
+    for ridx in range(N):
+        plate.append([])
+        for cidx, lt in enumerate(input()):
+            if lt == 'R':
+                red[0] = ridx
+                red[1] = cidx
+                plate[-1].append(0)
 
-    table = list(reversed(table))
-    table = [[table[y][x] for y in range(N)] for x in range(M)]
-    print('\n'.join([''.join(line) for line in table]))
-    print(move_upward(ry, rx, by, bx))
+            elif lt == 'B':
+                blue[0] = ridx
+                blue[1] = cidx
+                plate[-1].append(0)
+
+            elif lt == 'O':
+                hole[0] = ridx
+                hole[1] = cidx
+                plate[-1].append(0)
+
+            elif lt == '#':
+                plate[-1].append(1)
+
+            else:
+                plate[-1].append(0)
+
+    print(solve(red, blue))
