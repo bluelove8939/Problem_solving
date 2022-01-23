@@ -11,7 +11,7 @@ def solution(id_list, report, k):
             rpt_dict[vic_id][1].append(rpt_id)
 
     for vic_name in id_list:
-        if rpt_dict[vic_name][0] >=k:
+        if rpt_dict[vic_name][0] >= k:
             for rpt_id in rpt_dict[vic_name][1]:
                 rpt_dict[rpt_id][2] += 1
 
@@ -19,9 +19,9 @@ def solution(id_list, report, k):
     return answer
 
 
-if __name__ == '__main__':
-    id_list = ["muzi", "frodo", "apeach", "neo"]
-    report = ["muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"]
-    k = 2
-
-    print(solution(id_list, report, k))
+# if __name__ == '__main__':
+#     id_list = ["muzi", "frodo", "apeach", "neo"]
+#     report = ["muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"]
+#     k = 2
+#
+#     print(solution(id_list, report, k))
