@@ -1,4 +1,4 @@
-##<b><a href=https://programmers.co.kr/learn/challenges style="text-decoration:none;color:inherit">2022 KAKAO BLIND RECRUITMENT</a></b>
+## <b><a href=https://programmers.co.kr/learn/challenges style="text-decoration:none;color:inherit">2022 KAKAO BLIND RECRUITMENT</a></b>
 
 
 ### <b> 1. 신고 결과 받기 </b>
