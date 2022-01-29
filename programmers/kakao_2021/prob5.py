@@ -44,9 +44,10 @@ def solution(info, edges):
         while len(sheep_nodes) != 0:
             nd = sheep_nodes.pop(-1)
             tmp_sheep_cnt, tmp_wolf_nodes = current_cluster(nd)
-            sheep_cnt += tmp_sheep_cnt
-            wolf_cnt += distance
-            wolf_nodes += tmp_wolf_nodes
+            if sheep_cnt > wolf_cnt+distance:
+                sheep_cnt += tmp_sheep_cnt
+                wolf_cnt += distance
+                wolf_nodes += tmp_wolf_nodes
 
         # Search for next clusters
         while len(sheep_nodes) == 0 and len(wolf_nodes) != 0:
@@ -66,6 +67,6 @@ def solution(info, edges):
 
 
 if __name__ == '__main__':
-    info = [0,0,1,1,1,0,1,0,1,0,1,1]
-    edges = [[0,1],[1,2],[1,4],[0,8],[8,7],[9,10],[9,11],[4,3],[6,5],[4,6],[8,9]]
+    info = [0,1,0,1,1,0,1,0,0,1,0]
+    edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[4,8],[6,9],[9,10]]
     print(solution(info, edges))

@@ -1,4 +1,6 @@
-## <b><a href=https://programmers.co.kr/learn/challenges style="text-decoration:none;color:inherit">2022 KAKAO BLIND RECRUITMENT</a></b>
+<h2><b><a href=https://programmers.co.kr/learn/challenges style="text-decoration:none;color:inherit">
+2022 KAKAO BLIND RECRUITMENT
+</a></b></h2>
 
 
 ### <b> 1. 신고 결과 받기 </b>
@@ -61,8 +63,14 @@ DFS를 사용한 완전 탐색 알고리즘을 활용하였다.
 어떤 경우에는 이 방식으로 알고리즘을 구현하면 메모리 제한에 걸릴 위험이 있어 보인다.
 
 
-### <b> 4. 양과 늑대 </b>
+### <b> 4. 양과 늑대 - 미해결</b>
 
 이진 트리 형태의 그래프에서,
 특정한 종류의 노드들이 모여있는 클러스터들에 대한 탐색 순서를 결정하는 문제로 이해하였다.
 첫인상으로는 priority queue를 활용한 BFS 알고리즘을 통해 이 문제를 해결할 수 있을 것으로 보인다.
+
+
+### <b> 5. 파괴되지 않은 건물 - 미해결 </b>
+
+굉장히 간단한 문제이지만, 건물의 개수가 최대 백만개로 너무 많아 브루트포스로 이 문제를 해결할 수는 없어 보인다.
+대신 여러가지 알고리즘적 트릭을 적용하여 시간복잡도를 최소화해야 할 것으로 보인다.
