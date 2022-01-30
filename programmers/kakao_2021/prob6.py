@@ -1,13 +1,11 @@
 def solution(board, skill):
     answer = 0  # the number of preserved buildings
 
+    # sort the skill array
+    skill = sorted(skill, key=lambda x:(x[1], x[2], x[3], x[4]))
+
     for ridx, row in enumerate(board):
         for cidx, value in enumerate(row):
-            # iterate for each skills
-            for tp, r1, c1, r2, c2, deg in skill:
-                if (r1 <= ridx <= r2) and (c1 <= cidx <= c2):
-                    if tp == 1: value -= deg
-                    else: value += deg
 
             # check whether the building is preserved
             if value > 0: answer += 1
