@@ -1,68 +1,42 @@
 class TreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.lnk = []
+    def __init__(self, sheep_cnt, wolf_cnt, visited_nodes):
+        self.sheep_cnt = sheep_cnt  # the number of sheep
+        self.wolf_cnt = wolf_cnt    # the number of wolf
+        self.visited_nodes = visited_nodes  # bit-masking set
 
-    def makelink(self, nd):
-        if nd not in self.lnk:
-            self.lnk.append(nd)
-
-
-def current_cluster(nd):  # the node 'nd' needs to be a sheep node
-    if nd.value == 1:
-        return 0
-
-    sheep_nodes, wolf_nodes = [nd], []
-    sheep_cnt = 1
-
-    while len(sheep_nodes) != 0:
-        nd = sheep_nodes.pop(-1)
-
-        for child in nd.lnk:
-            if child.value == 0:
-                sheep_nodes.append(child)
-                sheep_cnt += 1
-            else:
-                wolf_nodes.append(child)
-
-    return sheep_cnt, wolf_nodes
+    def visited(self, idx):
+        return self.visited_nodes & (1 << idx)
 
 
 def solution(info, edges):
-    # Preprocessing inputs
-    nodes = [TreeNode(val) for val in info]
-    for parent, child in edges:
-        nodes[parent].makelink(nodes[child])
+    graph = [[] for _ in info]
+    for a, b in edges: graph[a].append(b)  # adjacent matrix expression of given graph
+    visited_set = [False] * pow(2, len(info)+1)  # cache
 
-    sheep_nodes, wolf_nodes = [], []  # nodes to be visited
-    sheep_cnt, wolf_cnt, distance = 0, 0, 0
-    sheep_nodes.append(nodes[0])
+    # BFS algorithm
+    queue = [TreeNode(1, 0, 1)]  # visit node 0
+    answer = 1
 
-    # Repeat the overall task until there aren't any node to visit
-    while len(sheep_nodes) != 0 or len(wolf_nodes) != 0:
-        # Search for current clusters
-        while len(sheep_nodes) != 0:
-            nd = sheep_nodes.pop(-1)
-            tmp_sheep_cnt, tmp_wolf_nodes = current_cluster(nd)
-            if sheep_cnt > wolf_cnt+distance:
-                sheep_cnt += tmp_sheep_cnt
-                wolf_cnt += distance
-                wolf_nodes += tmp_wolf_nodes
+    while len(queue) != 0:
+        nd = queue.pop(0)
 
-        # Search for next clusters
-        while len(sheep_nodes) == 0 and len(wolf_nodes) != 0:
-            distance += 1
-            tmp_wolf_nodes = []
+        for idx, val in enumerate(info):
+            if nd.visited(idx):
+                for child in graph[idx]:
+                    # calculate next state to search
+                    sheep_cnt = nd.sheep_cnt
+                    wolf_cnt = nd.wolf_cnt
+                    visited_nodes = nd.visited_nodes | (1 << child)
 
-            while len(wolf_nodes) != 0:
-                nd = wolf_nodes.pop(-1)
-                for child in nd.lnk:
-                    if child.value == 0: sheep_nodes.append(child)
-                    else: tmp_wolf_nodes.append(child)
+                    if not visited_set[visited_nodes]:
+                        if info[child] == 0: sheep_cnt += 1
+                        elif sheep_cnt > wolf_cnt + 1: wolf_cnt += 1
+                        else: continue
 
-            wolf_nodes = tmp_wolf_nodes
+                        queue.append(TreeNode(sheep_cnt, wolf_cnt, visited_nodes))
+                        answer = max(answer, sheep_cnt)
+                        visited_set[visited_nodes] = True
 
-    answer = sheep_cnt
     return answer
 
 
