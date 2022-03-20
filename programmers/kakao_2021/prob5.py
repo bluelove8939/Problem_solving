@@ -4,7 +4,7 @@ class TreeNode:
         self.wolf_cnt = wolf_cnt    # the number of wolf
         self.visited_nodes = visited_nodes  # bit-masking set
 
-    def visited(self, idx):
+    def isvisited(self, idx):
         return self.visited_nodes & (1 << idx)
 
 
@@ -21,7 +21,7 @@ def solution(info, edges):
         nd = queue.pop(0)
 
         for idx, val in enumerate(info):
-            if nd.visited(idx):
+            if nd.isvisited(idx):
                 for child in graph[idx]:
                     # calculate next state to search
                     sheep_cnt = nd.sheep_cnt
